@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/jschaf/jsc/pkg/markdown/mdtest"
-
-	"github.com/jschaf/jsc/pkg/texts"
 )
 
 func TestCodeBlockExt(t *testing.T) {
@@ -15,43 +13,38 @@ func TestCodeBlockExt(t *testing.T) {
 		want string
 	}{
 		{
-			"go func",
-			texts.Dedent("``` go\n" +
-				"func foo() {}\n" +
-				"```\n"),
-			texts.Dedent(`
-					<fieldset class="code-block-container">
-						<pre class="code-block">
-							<code-kw>func</code-kw> <code-fn>foo</code-fn>() {}
-						</pre>
-					</fieldset>
-    `),
+			name: "go func",
+			src: fenced(`go {name='foo.go'}
+func foo() {}`),
+			want: `
+<div class="code-block-container">
+	<pre class="code-block">
+		<code-kw>func</code-kw> <code-fn>foo</code-fn>() {}
+	</pre>
+</div>`,
 		},
 		{
-			"go func",
-			texts.Dedent("``` go\n" +
-				"Foo 28%\n" +
-				"```\n"),
-			texts.Dedent(`
-					<fieldset class="code-block-container">
-						<pre class="code-block">
-							Foo 28%
-						</pre>
-					</fieldset>
-     `),
+			name: "go func with percent",
+			src: fenced(` go
+Foo 28%`),
+			want: `
+<div class="code-block-container">
+	<pre class="code-block">
+		Foo 28%
+	</pre>
+</div>`,
 		},
 		{
-			"go func receiver",
-			texts.Dedent("``` go\n" +
-				"func (t *T) foo() {}\n" +
-				"```\n"),
-			texts.Dedent(`
-					<fieldset class="code-block-container">
-						<pre class="code-block">
-							<code-kw>func</code-kw> (t *T) <code-fn>foo</code-fn>() {}
-						</pre>
-					</fieldset>
-     `),
+			name: "go func receiver",
+			src: fenced(` go
+func (t *T) foo() {}
+`),
+			want: `
+<div class="code-block-container">
+	<pre class="code-block">
+		<code-kw>func</code-kw> (t *T) <code-fn>foo</code-fn>() {}
+	</pre>
+</div>`,
 		},
 	}
 	for _, tt := range tests {
@@ -61,4 +54,8 @@ func TestCodeBlockExt(t *testing.T) {
 			mdtest.AssertNoRenderDiff(t, doc, md, tt.src, tt.want)
 		})
 	}
+}
+
+func fenced(s string) string {
+	return "```" + s + "\n```"
 }

@@ -2,17 +2,18 @@ package mdext
 
 import (
 	"bytes"
-	"github.com/jschaf/jsc/pkg/markdown/extenders"
-	"github.com/jschaf/jsc/pkg/markdown/ord"
-	"html"
-	"io"
-
+	"fmt"
 	"github.com/alecthomas/chroma"
 	"github.com/alecthomas/chroma/lexers"
+	"github.com/jschaf/jsc/pkg/markdown/attrs"
+	"github.com/jschaf/jsc/pkg/markdown/extenders"
+	"github.com/jschaf/jsc/pkg/markdown/ord"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/util"
+	"html"
+	"io"
 )
 
 // codeBlockRenderer renders code blocks, replacing the default renderer.
@@ -26,20 +27,52 @@ func (c codeBlockRenderer) render(w util.BufWriter, source []byte, node ast.Node
 	n := node.(*ast.FencedCodeBlock)
 
 	if entering {
-		lang := string(n.Language(source))
+		info, err := parseCodeBlockInfo(n, source)
+		if err != nil {
+			return ast.WalkStop, fmt.Errorf("parse code block info: %w", err)
+		}
 
-		lexer := getLexer(lang)
+		lexer := getLexer(info.lang)
 
 		tokenIter, err := lexer.Tokenise(nil, readAllCodeBlockLines(n, source))
 		if err != nil {
 			panic(err)
 		}
-		if err := formatCodeBlock(w, tokenIter, lang); err != nil {
+		if err := formatCodeBlock(w, tokenIter, info); err != nil {
 			panic(err)
 		}
 
 	}
 	return ast.WalkContinue, nil
+}
+
+type codeInfo struct {
+	lang        string
+	name        string
+	description string
+}
+
+func parseCodeBlockInfo(n *ast.FencedCodeBlock, source []byte) (codeInfo, error) {
+	if n.Info == nil {
+		return codeInfo{}, nil
+	}
+	segment := n.Info.Segment
+	info := bytes.TrimSpace(segment.Value(source))
+	split := bytes.IndexByte(info, ' ')
+	if split == -1 {
+		return codeInfo{lang: string(info)}, nil
+	}
+	lang := string(info[:split])
+	vals, err := attrs.ParseValues(string(info[split+1:]))
+	if err != nil {
+		return codeInfo{}, fmt.Errorf("parse extented attribute values: %w", err)
+	}
+
+	return codeInfo{
+		lang:        lang,
+		name:        vals.Name,
+		description: vals.Description,
+	}, nil
 }
 
 func readAllCodeBlockLines(n *ast.FencedCodeBlock, source []byte) string {
@@ -61,12 +94,12 @@ func getLexer(language string) chroma.Lexer {
 	return lexer
 }
 
-func formatCodeBlock(w io.Writer, iterator chroma.Iterator, lang string) error {
+func formatCodeBlock(w io.Writer, iterator chroma.Iterator, info codeInfo) error {
 	writeStrings(w, "<div class='code-block-container'>")
 	lines := chroma.SplitTokensIntoLines(iterator.Tokens())
 	minLineLegend := 3
-	if lang != "" && lang != "text" && len(lines) > minLineLegend {
-		writeStrings(w, "<div class='code-block-lang'>", lang, "</div>")
+	if info.lang != "" && info.lang != "text" && len(lines) > minLineLegend {
+		writeStrings(w, "<div class='code-block-lang'>", info.lang, "</div>")
 	}
 	writeStrings(w, "<pre class='code-block'>")
 
@@ -106,7 +139,7 @@ func formatCodeBlock(w io.Writer, iterator chroma.Iterator, lang string) error {
 				writeStrings(w, "<code-kw>", h, "</code-kw>")
 
 			case chroma.NameFunction:
-				switch lang {
+				switch info.lang {
 				case "go":
 					if i < 2 {
 						writeStrings(w, h)
@@ -161,6 +194,18 @@ func formatCodeBlock(w io.Writer, iterator chroma.Iterator, lang string) error {
 
 	writeStrings(w, "</pre>")
 	writeStrings(w, "</div>")
+
+	// Info block.
+	if info.name != "" || info.description != "" {
+		writeStrings(w, "<div class='code-block-info'>")
+		if info.name != "" {
+			writeStrings(w, "<div class='code-block-name'>", info.name, "</div>")
+		}
+		if info.description != "" {
+			writeStrings(w, "<div class='code-block-description'>", info.description, "</div>")
+		}
+		writeStrings(w, "</div>")
+	}
 	return nil
 }
 

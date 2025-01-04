@@ -10,7 +10,7 @@ any sense of the word. The design goals of the blog:
 
 ### Installation
 
-```shell script
+```shell
 sudo apt-get install libvips-dev liborc-0.4-dev libtiff5-dev \
      libjpeg-turbo8-dev libgsf-1-dev
 ```
@@ -87,4 +87,3 @@ of posts truncates the following content. For the detail view, the
 
 Citations use square brackets with an @ sign followed by the bibtex identifier.
 `[see @doe99, pp. 33-35]`
-

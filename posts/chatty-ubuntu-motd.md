@@ -64,7 +64,7 @@ CONTINUE_READING
 The commands listed below reduce the verbosity of the MOTD from 42 lines to 11
 lines.
 
-```shell script
+```shell
 # Disable cron job that updates the Ubuntu news.
 systemctl disable motd-news.timer
 

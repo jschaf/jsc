@@ -14,7 +14,7 @@ onto the host machine. Since Docker runs as root, the generated `.deb` files are
 also owned by root, which means I can't delete them as a normal user without 
 `sudo`. As a quick example:
 
-```shell script
+```shell
 docker run --rm \
     --mount 'type=bind,source=/tmp,destination=/tmp' \
     alpine \
@@ -24,7 +24,7 @@ docker run --rm \
 The resulting file permissions show the Docker container created file is indeed
 owned by root:
 
-```shell script
+```shell
 $ ls -alh /tmp/docker-owned.txt
 -rw-r--r-- 1 root root 13 Oct  3 00:30 /tmp/docker-owned.txt
 ```
@@ -58,7 +58,7 @@ USER $USER_NAME
 We'll create the image by passing in the current user ID, group ID, and 
 user name into the Docker build command:
 
-```shell script
+```shell
 docker build \
     --build-arg USER_ID="$(id -u)" \
     --build-arg GROUP_ID="$(id -g)" \
@@ -69,7 +69,7 @@ docker build \
 Finally, verify that the files created in the container are owned by the current 
 user:
 
-```shell script
+```shell
 docker run --rm \                
     --mount 'type=bind,source=/tmp,destination=/tmp' \
     tmp-docker-root-ownership \
@@ -108,7 +108,7 @@ USER $USER_NAME
 ```
 
 
-```shell script
+```shell
 docker build \
     --build-arg USER_ID="$(id -u)" \
     --build-arg GROUP_ID="$(id -g)" \

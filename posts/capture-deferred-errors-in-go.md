@@ -12,7 +12,7 @@ Errors in defer statements require a more delicate touch. Opening a file demands
 a matching close to avoid leaking file descriptors. For example, we might open a
 file and write interesting data:
 
-```go
+```go {description="motivating example"}
 func populateFile() error
 	f, err := os.Open("foo.txt", os.O_CREATE, 0o644)
 	if err != nil {
@@ -35,7 +35,7 @@ JavaScript friends might recognize). The IIFE overwrites the colloquially-named
 
 [IIFE]: https://developer.mozilla.org/en-US/docs/Glossary/IIFE
 
-```go
+```go {description="overwriting the error in defer"}
 func populateFile() (err error)
 	f, err := os.Open("foo.txt", os.O_CREATE, 0o644)
 	if err != nil {
@@ -56,15 +56,14 @@ func populateFile() (err error)
 }
 ```
 
-Alas, this solution brings its own set of problems. The remedy introduces a new
-problem. If `f.Close` errors, we overwrite the error from
-`writeInterestingData`. We need to combine the errors. Before reaching to Uber's
-[multierr] package, we'll lean on [`errors.Join`] to combine multiple errors,
-introduced by Go 1.20.
+Alas, this solution brings its own set of problems. If `f.Close` errors, we
+overwrite the error from `writeInterestingData`. We need to combine the errors.
+Before reaching to Uber's [multierr] package, we'll lean on [`errors.Join`] to
+combine multiple errors, introduced by Go 1.20.
 
 [`errors.Join`]: https://pkg.go.dev/errors#Join
 
-```go
+```go {description="correct and verbose"}
 func populateFile() (err error)
 	f, err := os.Open("foo.txt", os.O_CREATE, 0o644)
 	if err != nil {
@@ -85,7 +84,7 @@ func populateFile() (err error)
 ```
 
 The solution does not please the eyes and requires choosing a name other than
-`err` for the error from `f.Close`.
+`err`, like `closeErr` for the `f.Close` error.
 
 [multierr]: https://github.com/uber-go/multierr
 
@@ -98,7 +97,7 @@ the error with an existing named error.
 [coding style guide]: https://thanos.io/tip/contributing/coding-style-guide.md/#defers-dont-forget-to-check-returned-errors
 [`runutil.CloseWithErrCapture`]: https://github.com/thanos-io/thanos/blob/ca40906c83d94cfcbe4bcc181a286663aeb268d5/pkg/runutil/runutil.go#L156
 
-```go
+```go {name="runutil.go" description="helper functions from thanos"}
 // CloseWithErrCapture closes closer, wraps any error with message from
 // fmt and args, and stores this in err.
 func CloseWithErrCapture(err *error, c io.Closer, format string, a ...any) {
@@ -111,7 +110,7 @@ func CloseWithErrCapture(err *error, c io.Closer, format string, a ...any) {
 
 Armed by Thanos, we'll replace the anonymous function with `CloseWithErrCapture`.
 
-```go
+```go {description="correct and less verbose"}
 func populateFile() (err error)
 	f, err := os.Open("foo.txt", os.O_CREATE, 0o644)
 	if err != nil {
@@ -136,7 +135,7 @@ we're at it, we'll generalize the pattern to any error-returning function named
 functions, like `Flush`, `Shutdown`, and functions requiring context, like
 `pgx.Conn.Close(ctx)`.
 
-```go
+```go {description="errs.Capture revealed"}
 package errs
 
 import (
@@ -159,7 +158,7 @@ func Capture(errPtr *error, errFunc func() error, msg string) {
 Instead of using an `io.Closer` interface, we'll pass the function method at the
 call-site.
 
-```go
+```go {description="corrected motivating example"}
 func populateFile() (err error)
 	f, err := os.Open("foo.txt", os.O_CREATE, 0o644)
 	if err != nil {

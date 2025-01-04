@@ -16,8 +16,8 @@ import (
 
 const PostPath = "/md/test/path.md"
 
-// NewTester creates a new markdown with the given extensions. We can't use
-// our top level markdown because it would create a circular dependency.
+// NewTester creates a new Markdown with the given extensions. We can't use
+// our top level Markdown because it would create a circular dependency.
 func NewTester(_ *testing.T, exts ...goldmark.Extender) (goldmark.Markdown, parser.Context) {
 	md := goldmark.New(goldmark.WithExtensions(exts...))
 	pc := parser.NewContext()
@@ -27,7 +27,7 @@ func NewTester(_ *testing.T, exts ...goldmark.Extender) (goldmark.Markdown, pars
 	return md, pc
 }
 
-// MustParseMarkdown parses markdown into a document node.
+// MustParseMarkdown parses Markdown into a document node.
 func MustParseMarkdown(t *testing.T, md goldmark.Markdown, ctx parser.Context, src string) ast.Node {
 	t.Helper()
 	reader := text.NewReader([]byte(src))
@@ -38,7 +38,7 @@ func MustParseMarkdown(t *testing.T, md goldmark.Markdown, ctx parser.Context, s
 	return doc
 }
 
-// AssertNoRenderDiff asserts the markdown instance renders src into the wanted
+// AssertNoRenderDiff asserts the Markdown instance renders src into the wanted
 // string.
 func AssertNoRenderDiff(t *testing.T, doc ast.Node, md goldmark.Markdown, src, want string, opts ...cmp.Option) {
 	t.Helper()

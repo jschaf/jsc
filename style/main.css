@@ -10,10 +10,12 @@
   --font-size-header: calc(1rem * 1.25 * 1.25);
   --font-size-body: 1rem;
   --font-size-caption: calc(1rem / 1.25);
+  --font-size-tiny: calc(1rem / 1.5);
   --line-height-body: calc(1rem * 1.3333);
   --line-height-caption: 1rem;
 
   --color-light-gray: #767676;
+  --color-lightest-gray: #999997;
 
 
   /** The highlight color for a reference. */
@@ -536,14 +538,26 @@ thead th {
 
 .code-block-lang {
   float: right;
-  font-size: calc(var(--font-size-caption));
-  margin-top: calc(-1 * var(--font-size-caption));
+  font-size: var(--font-size-tiny);
+  margin-top: calc(-1.1 * var(--font-size-tiny));
   margin-right: 0.5rem;
   background-color: white;
   padding-left: 3px;
   padding-right: 3px;
   font-variant-caps: all-small-caps;
-  color: var(--color-light-gray);
+  color: var(--color-lightest-gray);
+}
+
+.code-block-info {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -2px;
+  font-size: var(--font-size-tiny);
+  color: var(--color-lightest-gray);
+}
+
+.code-block-name + .code-block-description::before {
+  content: ", ";
 }
 
 .code-block {

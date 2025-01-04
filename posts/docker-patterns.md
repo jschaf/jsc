@@ -56,7 +56,7 @@ available package versions that existed at the creation time of the image.
 Debian removes old versions from the package repositories, so `apt-get install`
 can fail if the cached version is too old.
 
-```shell script
+```shell
 apt-get update
 ```
 
@@ -84,7 +84,7 @@ direct curl to use the exit code 22 when the status code is not 200.
 
 A robust curl command looks like:
 
-```shell script
+```shell
 # --fail returns a non-zero exit code on a non-200 status
 #   code.
 # --location follows redirects instead of returning the
@@ -100,7 +100,7 @@ bundle provides an efficient, versioned mechanism to download source code.
 Instead of extracting all files in a compressed tar archive, extract only the
 files you need.
 
-```shell script
+```shell
 url="https://packages.timber.io/vector/nightly/2020-05-04/vector-amd64.deb"
 out="/tmp/vector_amd64.deb"
 curl --fail --location --output "${out}" "${url}"
@@ -201,7 +201,7 @@ of size optimizations I've pursued:
   the perl dependency. Perl is used for interactive commands, which is not need
   in CI. I removed most of the fat with:
 
-  ```shell script
+  ```shell
   RUN set -eux \
     && apt-get install git \
     # Remove large git binaries that we don't need. Most git executables
@@ -217,7 +217,7 @@ of size optimizations I've pursued:
   `libc-2.29.so`. When the binary was run, it caused a stack-smashing error,
   similar to https://stackoverflow.com/questions/57156105.
 
-  ```shell script
+  ```shell
   #!/bin/bash
   set -euo pipefail
 
@@ -256,7 +256,7 @@ of size optimizations I've pursued:
   mirror-file.sh "${binary}" "${prefix}"
   ```
 
-  ```shell script
+  ```shell
   #!/bin/bash
   set -euo pipefail
 
