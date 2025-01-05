@@ -14,9 +14,90 @@
   --line-height-body: calc(1rem * 1.3333);
   --line-height-caption: 1rem;
 
-  --color-light-gray: #767676;
-  --color-lightest-gray: #999997;
+  /** https://tailwindcss.com/docs/customizing-colors */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
 
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+  --gray-950: #020617;
+
+  --zinc-50: #fafafa;
+  --zinc-100: #f4f4f5;
+  --zinc-200: #e4e4e7;
+  --zinc-300: #d4d4d8;
+  --zinc-400: #a1a1aa;
+  --zinc-500: #71717a;
+  --zinc-600: #52525b;
+  --zinc-700: #3f3f46;
+  --zinc-800: #27272a;
+  --zinc-900: #18181b;
+  --zinc-950: #09090b;
+
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  --neutral-950: #0a0a0a;
+
+  --stone-50: #fafaf9;
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-400: #a8a29e;
+  --stone-500: #78716c;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #292524;
+  --stone-900: #1c1917;
+  --stone-950: #0c0a09;
+
+  --sky-50: #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-200: #bae6fd;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+  --sky-700: #0369a1;
+  --sky-800: #075985;
+  --sky-900: #0c4a6e;
+  --sky-950: #082f49;
+
+  --yellow-50: #fefce8;
+  --yellow-100: #fef9c3;
+  --yellow-200: #fef08a;
+  --yellow-300: #fde047;
+  --yellow-400: #facc15;
+  --yellow-500: #eab308;
+  --yellow-600: #ca8a04;
+  --yellow-700: #a16207;
+  --yellow-800: #854d0e;
+  --yellow-900: #713f12;
+  --yellow-950: #422006;
 
   /** The highlight color for a reference. */
   --reference-highlight-color: rgba(255, 220, 0, 0.3);
@@ -85,14 +166,14 @@ body > header a,
 body > footer a {
   font-weight: 500;
   text-decoration: none;
-  color: #686767;
+  color: var(--slate-500);
   padding: 0.45rem 0;
   display: block;
 }
 
 body > header a:hover,
 body > footer a:hover {
-  color: var(--text-color);
+  color: var(--slate-800);
 }
 
 .small-caps {
@@ -132,7 +213,7 @@ body > main {
 
 @media screen and (min-width: 682px) {
   html {
-    background-color: #eaeaea;
+    background-color: var(--zinc-200);
   }
 
   body > header,
@@ -206,7 +287,7 @@ a {
 }
 
 a:hover {
-  color: #666;
+  color: var(--slate-500);
 }
 
 h1 {
@@ -228,14 +309,14 @@ article > header {
 header > time {
   display: block;
   margin-top: 0.45rem;
-  color: var(--color-light-gray);
+  color: var(--gray-500);
   font-size: var(--font-size-caption);
   font-weight: 700;
   transition: color 3.5s ease;
 }
 
 header:hover > time {
-  color: #1b1b1b;
+  color: var(--slate-800);
   transition: color 0.35s ease;
 }
 
@@ -532,8 +613,9 @@ thead th {
   position: relative;
   margin-top: .75rem;
   border: none; /* disable fieldset automatic border */
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+  border-top: 1px solid var(--stone-300);
+  border-bottom: 1px solid var(--stone-300);
+  background-color: var(--stone-50);
 }
 
 .code-block-lang {
@@ -545,7 +627,7 @@ thead th {
   padding-left: 3px;
   padding-right: 3px;
   font-variant-caps: all-small-caps;
-  color: var(--color-lightest-gray);
+  color: var(--gray-400);
 }
 
 .code-block-info {
@@ -553,7 +635,7 @@ thead th {
   justify-content: flex-end;
   margin-top: -2px;
   font-size: var(--font-size-tiny);
-  color: var(--color-lightest-gray);
+  color: var(--gray-400);
 }
 
 .code-block-name + .code-block-description::before {
@@ -579,6 +661,12 @@ code {
   font-size: 15px;
   font-family: SFMono-Regular, Consolas, liberation mono, Menlo, Courier,
   monospace;
+}
+
+code-hl {
+  border-left: 2px solid var(--sky-300);
+  background-color: var(--sky-100);
+  display: block;
 }
 
 code-kw {

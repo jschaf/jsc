@@ -18,7 +18,7 @@ func populateFile() error
 	if err != nil {
 		return fmt.Errorf("open file: %w", err)
 	}
-	defer f.Close() // BAD: ignored error
+	defer f.Close() // BAD: ignored error <HL>
 	
 	err = writeInterestingData(f)
 	if err != nil {
@@ -41,12 +41,12 @@ func populateFile() (err error)
 	if err != nil {
 		return fmt.Errorf("open file: %w", err)
 	}
-	defer func() {
-		if closeErr := f.Close(); err != nil {
-			// BAD: overwrites existing error
-			err = fmt.Errorf("close file: %w", closeErr)
-		}
-	}()
+	defer func() {                                       // <HL>
+		if closeErr := f.Close(); err != nil {           // <HL>
+			// BAD: overwrites existing error <HL>
+			err = fmt.Errorf("close file: %w", closeErr) // <HL>
+		}                                                // <HL>
+	}()                                                  // <HL>
 
 	err = writeInterestingData(f)
 	if err != nil {
@@ -69,11 +69,11 @@ func populateFile() (err error)
 	if err != nil {
 		return fmt.Errorf("open file: %w", err)
 	}
-	defer func() {
-		if closeErr := f.Close(); err != nil {
-			err = errors.Join(err, fmt.Errorf("close file: %w", closeErr))
-		}
-	}()
+	defer func() {                                                         // <HL>
+		if closeErr := f.Close(); err != nil {                             // <HL>
+			err = errors.Join(err, fmt.Errorf("close file: %w", closeErr)) // <HL>
+		}                                                                  // <HL>
+	}()                                                                    // <HL>
 
 	err = writeInterestingData(f)
 	if err != nil {
@@ -116,7 +116,7 @@ func populateFile() (err error)
 	if err != nil {
 		return fmt.Errorf("open file: %w", err)
 	}
-	defer runutil.CloseWithErrCapture(&err, f, "close file")
+	defer runutil.CloseWithErrCapture(&err, f, "close file") // <HL>
 
 	err = writeInterestingData(f)
 	if err != nil {
@@ -164,7 +164,7 @@ func populateFile() (err error)
 	if err != nil {
 		return fmt.Errorf("open file: %w", err)
 	}
-	defer errs.Capture(&err, f.Close, "close file")
+	defer errs.Capture(&err, f.Close, "close file") // <HL>
 
 	err = writeInterestingData(f)
 	if err != nil {
@@ -189,7 +189,7 @@ We've considered a few similar capture functions but only implemented
 `errs.CaptureT` to capture errors in a test. We call the testing variant 125
 times in our 300 kLOC monorepo.
 
-```go
+```go {description="capture errors in tests"}
 package errs
 
 // testingTB is a subset of *testing.T and *testing.B methods.

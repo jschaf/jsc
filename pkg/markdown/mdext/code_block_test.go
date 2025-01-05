@@ -13,7 +13,7 @@ func TestCodeBlockExt(t *testing.T) {
 		want string
 	}{
 		{
-			name: "go func",
+			name: "go func named",
 			src: fenced(`go {name='foo.go'}
 func foo() {}`),
 			want: `
@@ -21,7 +21,39 @@ func foo() {}`),
 	<pre class="code-block">
 		<code-kw>func</code-kw> <code-fn>foo</code-fn>() {}
 	</pre>
-</div>`,
+</div>
+<div class="code-block-info"><div class="code-block-name">foo.go</div></div>
+`,
+		},
+		{
+			name: "go func highlight",
+			src: fenced(`go {name='foo.go'}
+func foo() {} // <HL>`),
+			want: `
+<div class="code-block-container">
+	<pre class="code-block">
+		<code-hl>
+			<code-kw>func</code-kw> <code-fn>foo</code-fn>() {}
+		</code-hl>
+	</pre>
+</div>
+<div class="code-block-info"><div class="code-block-name">foo.go</div></div>
+`,
+		},
+		{
+			name: "go func highlight whitespace",
+			src: fenced(`go {name='foo.go'}
+func foo() {} //         <HL>`),
+			want: `
+<div class="code-block-container">
+	<pre class="code-block">
+		<code-hl>
+			<code-kw>func</code-kw> <code-fn>foo</code-fn>() {}
+		</code-hl>
+	</pre>
+</div>
+<div class="code-block-info"><div class="code-block-name">foo.go</div></div>
+`,
 		},
 		{
 			name: "go func with percent",

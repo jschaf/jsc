@@ -14,6 +14,7 @@ import (
 	"github.com/yuin/goldmark/util"
 	"html"
 	"io"
+	"strings"
 )
 
 // codeBlockRenderer renders code blocks, replacing the default renderer.
@@ -97,45 +98,31 @@ func getLexer(language string) chroma.Lexer {
 func formatCodeBlock(w io.Writer, iterator chroma.Iterator, info codeInfo) error {
 	writeStrings(w, "<div class='code-block-container'>")
 	lines := chroma.SplitTokensIntoLines(iterator.Tokens())
-	minLineLegend := 3
-	if info.lang != "" && info.lang != "text" && len(lines) > minLineLegend {
-		writeStrings(w, "<div class='code-block-lang'>", info.lang, "</div>")
+
+	lines, err := annotateLines(lines)
+	if err != nil {
+		return fmt.Errorf("annotate lines: %w", err)
 	}
+
 	writeStrings(w, "<pre class='code-block'>")
 
 	for _, tokens := range lines {
 		for i, token := range tokens {
 			h := html.EscapeString(token.String())
 			switch token.Type {
+			case StartHighlightTokenType:
+				writeStrings(w, "<code-hl>", token.Value)
+			case EndHighlightTokenType:
+				writeStrings(w, token.Value, "</code-hl>")
 
-			case chroma.Comment:
-				fallthrough
-			case chroma.CommentHashbang:
-				fallthrough
-			case chroma.CommentMultiline:
-				fallthrough
-			case chroma.CommentPreproc:
-				fallthrough
-			case chroma.CommentPreprocFile:
-				fallthrough
-			case chroma.CommentSingle:
-				fallthrough
-			case chroma.CommentSpecial:
+			case chroma.Comment, chroma.CommentHashbang, chroma.CommentMultiline,
+				chroma.CommentPreproc, chroma.CommentPreprocFile, chroma.CommentSingle,
+				chroma.CommentSpecial:
 				writeStrings(w, "<code-comment>", h, "</code-comment>")
 
-			case chroma.Keyword:
-				fallthrough
-			case chroma.KeywordConstant:
-				fallthrough
-			case chroma.KeywordDeclaration:
-				fallthrough
-			case chroma.KeywordNamespace:
-				fallthrough
-			case chroma.KeywordPseudo:
-				fallthrough
-			case chroma.KeywordReserved:
-				fallthrough
-			case chroma.KeywordType:
+			case chroma.Keyword, chroma.KeywordConstant, chroma.KeywordDeclaration,
+				chroma.KeywordNamespace, chroma.KeywordPseudo, chroma.KeywordReserved,
+				chroma.KeywordType:
 				writeStrings(w, "<code-kw>", h, "</code-kw>")
 
 			case chroma.NameFunction:
@@ -157,33 +144,11 @@ func formatCodeBlock(w io.Writer, iterator chroma.Iterator, info codeInfo) error
 					writeStrings(w, "<code-fn>", h, "</code-fn>")
 				}
 
-			case chroma.String:
-				fallthrough
-			case chroma.StringAffix:
-				fallthrough
-			case chroma.StringBacktick:
-				fallthrough
-			case chroma.StringChar:
-				fallthrough
-			case chroma.StringDelimiter:
-				fallthrough
-			case chroma.StringDoc:
-				fallthrough
-			case chroma.StringDouble:
-				fallthrough
-			case chroma.StringEscape:
-				fallthrough
-			case chroma.StringHeredoc:
-				fallthrough
-			case chroma.StringInterpol:
-				fallthrough
-			case chroma.StringOther:
-				fallthrough
-			case chroma.StringRegex:
-				fallthrough
-			case chroma.StringSingle:
-				fallthrough
-			case chroma.StringSymbol:
+			case chroma.String, chroma.StringAffix, chroma.StringBacktick,
+				chroma.StringChar, chroma.StringDelimiter, chroma.StringDoc,
+				chroma.StringDouble, chroma.StringEscape, chroma.StringHeredoc,
+				chroma.StringInterpol, chroma.StringOther, chroma.StringRegex,
+				chroma.StringSingle, chroma.StringSymbol:
 				writeStrings(w, "<code-str>", h, "</code-str>")
 
 			default:
@@ -207,6 +172,59 @@ func formatCodeBlock(w io.Writer, iterator chroma.Iterator, info codeInfo) error
 		writeStrings(w, "</div>")
 	}
 	return nil
+}
+
+// annotateLines annotates lines of tokens with additional information,
+// modifying the token slice. Supported annotations:
+//   - If the last token of a line is a single-line comment, and the comment
+//     contains ends with <HL>, annotateLines inserts StartHighlightTokenType
+//     at the beginning of the line and EndHighlightTokenType at the end of the
+//     line.
+func annotateLines(lines [][]chroma.Token) ([][]chroma.Token, error) {
+	for i, tokens := range lines {
+		if len(tokens) == 0 {
+			continue
+		}
+		last := tokens[len(tokens)-1]
+		if last.Type != chroma.CommentSingle {
+			continue
+		}
+		comment := last.Value
+		annoOffset := strings.LastIndexByte(comment, '<')
+		if annoOffset == -1 || comment[annoOffset:] != "<HL>\n" {
+			continue
+		}
+
+		// Prepend StartHighlightTokenType.
+		lines[i] = append([]chroma.Token{{Type: StartHighlightTokenType, Value: ""}}, lines[i]...)
+
+		// If the comment only contains the <HL> marker, delete the comment.
+		// Otherwise, trim the comment to remove the <HL> marker.
+		rest := strings.TrimSpace(comment[:annoOffset])
+		if len(rest) <= 2 {
+			lines[i] = lines[i][:len(lines[i])-1]
+			// Delete spacing text preceding the <HL> comment.
+			if len(lines[i]) > 0 {
+				prev := lines[i][len(lines[i])-1]
+				if prev.Type == chroma.Text && strings.TrimSpace(prev.Value) == "" {
+					lines[i] = lines[i][:len(lines[i])-1]
+				}
+			}
+		} else {
+			lines[i][len(lines[i])-1].Value = strings.TrimSpace(rest)
+		}
+		lines[i] = append(lines[i], chroma.Token{Type: EndHighlightTokenType, Value: "\n"})
+	}
+
+	return lines, nil
+}
+
+const (
+	StartHighlightTokenType chroma.TokenType = 13000 + iota
+	EndHighlightTokenType
+)
+
+type StartHighlightToken struct {
 }
 
 func writeStrings(w io.Writer, ss ...string) {
