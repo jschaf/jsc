@@ -3,6 +3,8 @@ package compiler
 import (
 	"bytes"
 	"fmt"
+	"github.com/jschaf/jsc/pkg/errs"
+	"github.com/jschaf/jsc/render/sitemaps"
 	"html/template"
 	"io/fs"
 	"log/slog"
@@ -17,6 +19,8 @@ import (
 	"github.com/jschaf/jsc/pkg/markdown/mdext"
 	"github.com/jschaf/jsc/pkg/paths"
 )
+
+const rootURL = "https://joe.schafer.dev"
 
 // IndexCompiler compiles the / path, the main homepage.
 type IndexCompiler struct {
@@ -140,5 +144,39 @@ func (ic *IndexCompiler) Compile() error {
 		return fmt.Errorf("execute index template: %w", err)
 	}
 
+	err = writeSitemap(ic.distDir, asts)
+	if err != nil {
+		return fmt.Errorf("write sitemap: %w", err)
+	}
+
+	return nil
+}
+
+func writeSitemap(distDir string, ast []*markdown.AST) (mErr error) {
+	destFile, err := os.OpenFile(filepath.Join(distDir, "sitemap.xml"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
+	if err != nil {
+		return fmt.Errorf("open sitemap.xml file for write: %w", err)
+	}
+	defer errs.Capture(&mErr, destFile.Close, "close sitemap.xml file")
+
+	sitemap := sitemaps.New()
+	for _, a := range ast {
+		if a.Meta.Visibility != "published" {
+			continue
+		}
+		url := sitemaps.URL{
+			Loc:        rootURL + "/" + a.Meta.Slug,
+			LastMod:    a.Meta.Date,
+			ChangeFreq: "monthly",
+		}
+		sitemap.Add(url)
+	}
+	sm, err := sitemap.Build()
+	if err != nil {
+		return fmt.Errorf("build sitemap: %w", err)
+	}
+	if _, err := destFile.WriteString(sm); err != nil {
+		return fmt.Errorf("write sitemap.xml: %w", err)
+	}
 	return nil
 }

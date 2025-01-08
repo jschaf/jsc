@@ -45,8 +45,10 @@ func (s *Sitemap) Build() (string, error) {
 	avgXMLSize := 180
 	sb.Grow(avgXMLSize * len(s.urls))
 	sb.WriteString(`<?xml version="1.0" encoding="UTF-8"?>`)
+	sb.WriteByte('\n')
 	//goland:noinspection HttpUrlsUsage
 	sb.WriteString(`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`)
+	sb.WriteByte('\n')
 	for _, url := range s.urls {
 		sb.WriteString(`<url>`)
 		if url.Loc == "" {
@@ -66,6 +68,7 @@ func (s *Sitemap) Build() (string, error) {
 			sb.WriteString(`</changefreq>`)
 		}
 		sb.WriteString(`</url>`)
+		sb.WriteByte('\n')
 	}
 	sb.WriteString(`</urlset>`)
 	return sb.String(), nil
