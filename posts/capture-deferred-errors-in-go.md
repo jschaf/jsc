@@ -43,7 +43,7 @@ func populateFile() (err error)
 	}
 	defer func() {                                       // <HL>
 		if closeErr := f.Close(); err != nil {           // <HL>
-			// BAD: overwrites existing error <HL>
+			// BAD: overwrites existing error               <HL>
 			err = fmt.Errorf("close file: %w", closeErr) // <HL>
 		}                                                // <HL>
 	}()                                                  // <HL>

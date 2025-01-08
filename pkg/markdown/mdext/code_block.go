@@ -118,7 +118,9 @@ func formatCodeBlock(w io.Writer, iterator chroma.Iterator, info codeInfo) error
 			case chroma.Comment, chroma.CommentHashbang, chroma.CommentMultiline,
 				chroma.CommentPreproc, chroma.CommentPreprocFile, chroma.CommentSingle,
 				chroma.CommentSpecial:
-				writeStrings(w, "<code-comment>", h, "</code-comment>")
+				if h != "" {
+					writeStrings(w, "<code-comment>", h, "</code-comment>")
+				}
 
 			case chroma.Keyword, chroma.KeywordConstant, chroma.KeywordDeclaration,
 				chroma.KeywordNamespace, chroma.KeywordPseudo, chroma.KeywordReserved,
