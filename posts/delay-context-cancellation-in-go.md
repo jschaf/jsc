@@ -8,9 +8,9 @@ visibility = "published"
 
 The Go standard library defines [`context.Context`] to propagate deadlines,
 cancellation signals, and request-scoped values. For a server, the main function
-usually creates a top-level context and triggers the cancel on an interrupt
-signal. Today, we'll explore the interaction of context cancellation with
-batched workloads, like exporting traces.
+usually creates a top-level context that is canceled by an interrupt signal.
+Today, we'll explore the interaction of context cancellation with batch
+workloads (as opposed to request-response workloads), like exporting traces.
 
 ```go {description="cancel context on SIGINT"}
 package main
@@ -19,7 +19,6 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	"syscall"
 )
 
 func runMain() error {
@@ -44,20 +43,20 @@ shuts down. We'll have an observability gap during the server shutdown.
 
 The Go issue, [context: add WithoutCancel], discusses the nuances and bemoans
 conflating cancellation and context values. The issue took just under three
-years (July 2020 to May 2023) to land in the Go standard library.
-The main reasons necessary to remove cancellation are:
+years, July 2020 to May 2023, to land in the Go standard library.
+The two reasons in the linked issue for removing cancellation are:
 
 1. Processing rollbacks or other cleanup.
-2. Observability tasks to run after the context is canceled. This is the use 
-   case I needed.
+2. Observability tasks to run after the context is canceled.
 
+The second reason _precisely_ describes our use case of exporting traces.
 
 [context: add WithoutCancel]: https://github.com/golang/go/issues/40221
 
 ## WithDelayedCancel
 
 With the new Go additions, we can create a derived context that cancels after
-the parent context is done. For additional cleverness, we'll use the new
+the parent context is done. For a dash of mechanical sympathy, we'll use the new
 [context.AfterFunc] to avoid starting a goroutine until the context is done.
 
 [context.AfterFunc]: https://pkg.go.dev/context#AfterFunc
@@ -94,7 +93,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	"syscall"
+	"time"
 )
 
 func runMain() error {
