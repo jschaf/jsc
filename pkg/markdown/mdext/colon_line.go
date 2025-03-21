@@ -2,6 +2,8 @@ package mdext
 
 import (
 	"bytes"
+	"github.com/jschaf/jsc/pkg/markdown/mdctx"
+	"path/filepath"
 
 	"github.com/jschaf/jsc/pkg/markdown/extenders"
 	"github.com/jschaf/jsc/pkg/markdown/ord"
@@ -21,7 +23,8 @@ var KindColonLine = ast.NewNodeKind("ColonLine")
 type ColonLineName string
 
 const (
-	ColonLineTOC ColonLineName = "toc"
+	ColonLineTOC   ColonLineName = "toc"
+	ColonLineEmbed ColonLineName = "embed"
 )
 
 // ColonLine parses colon-delimited directives inspired by
@@ -31,8 +34,8 @@ const (
 //	:toc: right
 type ColonLine struct {
 	ast.BaseBlock
-	Name ColonLineName
-	Args string
+	Name     ColonLineName
+	RawAttrs string
 }
 
 func NewColonLine() *ColonLine {
@@ -76,19 +79,23 @@ func (clp ColonLineParser) Open(_ ast.Node, reader text.Reader, pc parser.Contex
 
 	// By this point we have a real colon line.
 	reader.AdvanceLine()
-	cb := NewColonLine()
-	cb.Name = ColonLineName(line[1 : i-1])
-	cb.Args = ""
+	cl := NewColonLine()
+	cl.Name = ColonLineName(line[1 : i-1])
 	if i < len(line) {
-		cb.Args = string(bytes.TrimSpace(line[i:]))
+		cl.RawAttrs = string(bytes.TrimSpace(line[i:]))
 	}
-	switch cb.Name {
+	switch cl.Name {
 	case ColonLineTOC:
 		toc := NewTOC()
 		SetTOC(pc, toc)
 		return toc, parser.Close
+	case ColonLineEmbed:
+		sourceDir := filepath.Dir(mdctx.GetFilePath(pc))
+		embed := NewEmbed(sourceDir, cl.RawAttrs)
+		return embed, parser.Close
+	default:
+		return nil, parser.NoChildren
 	}
-	return cb, parser.Close
 }
 
 func (clp ColonLineParser) Continue(_ ast.Node, _ text.Reader, _ parser.Context) parser.State {

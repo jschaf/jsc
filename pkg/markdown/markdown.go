@@ -2,6 +2,7 @@ package markdown
 
 import (
 	"fmt"
+	"github.com/yuin/goldmark/renderer/html"
 	"io"
 
 	"github.com/jschaf/jsc/pkg/cite"
@@ -72,6 +73,7 @@ func defaultExtensions(opts Options) []goldmark.Extender {
 		mdext.NewColonBlockExt(),
 		mdext.NewColonLineExt(),
 		mdext.NewCustomExt(),
+		mdext.NewEmbedExt(),
 		mdext.NewFootnoteExt(opts.CiteStyle, opts.CiteAttacher),
 		mdext.NewHeaderExt(),
 		mdext.NewHeadingExt(opts.HeadingAnchorStyle),
@@ -107,7 +109,9 @@ func New(opts ...Option) *Markdown {
 
 	m.gm = goldmark.New(
 		goldmark.WithExtensions(m.opts.Extenders...),
-		goldmark.WithExtensions(defaultExtensions(m.opts)...))
+		goldmark.WithExtensions(defaultExtensions(m.opts)...),
+		goldmark.WithRendererOptions(html.WithUnsafe()),
+	)
 	return m
 }
 

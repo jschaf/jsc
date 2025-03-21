@@ -1,0 +1,130 @@
+<div style="max-width: 260px; margin: 18px auto;">
+  <template shadowrootmode="open">
+    <style>
+      :host {
+        --sb-yellow: #f7da21;
+        --dark-black: #121212;
+        --sb-gray: #e7e7e7;
+        --bg-page: var(--white);
+        --white: #fff;
+
+        --bg-tile-sb: var(--sb-gray);
+        --text-constant: var(--dark-black);
+        --text: var(--dark-black);
+      }
+
+      .hive {
+        position: relative;
+        padding-bottom: 103.9230484542%;
+        user-select: none;
+      }
+
+      .hive-cell {
+        position: absolute;
+        top: 33.3333333333%;
+        left: 30%;
+        width: 40%;
+        height: 33.3333333333%;
+      }
+
+      .hive-cell .cell-fill {
+        cursor: pointer;
+        fill: var(--bg-tile-sb);
+        stroke: var(--bg-page);
+        transition: all 100ms;
+      }
+
+      .hive .cell-letter {
+        fill: var(--text);
+        font-weight: 700;
+        font-size: 1.675em;
+        text-anchor: middle;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+
+      .hive-cell:first-child .cell-letter {
+        fill: var(--text-constant);
+      }
+
+      .hive-cell:nth-child(1) {
+        transform: translate(0, 0);
+      }
+
+      .hive-cell:first-child .cell-fill {
+        fill: var(--sb-yellow);
+      }
+
+      .hive-cell:nth-child(2) {
+        transform: translate(-75%, -50%);
+      }
+
+      .hive-cell:nth-child(3) {
+        transform: translate(0, -100%);
+      }
+
+      .hive-cell:nth-child(4) {
+        transform: translate(75%, -50%);
+      }
+
+      .hive-cell:nth-child(5) {
+        transform: translate(75%, 50%);
+      }
+
+      .hive-cell:nth-child(6) {
+        transform: translate(0, 100%);
+      }
+
+      .hive-cell:nth-child(7) {
+        transform: translate(-75%, 50%);
+      }
+    </style>
+    <div class="hive">
+      <svg class="hive-cell center" viewBox="0 0 120 103.92304845413263">
+        <polygon class="cell-fill" points="0,51.96152422706631 30,0 90,0 120,51.96152422706631 90,103.92304845413263 30,103.92304845413263"
+                 stroke="white"
+                 stroke-width="7.5"></polygon>
+        <text class="cell-letter" x="50%" y="50%" dy="0.35em">e</text>
+      </svg>
+      <svg class="hive-cell outer" viewBox="0 0 120 103.92304845413263">
+        <polygon class="cell-fill" points="0,51.96152422706631 30,0 90,0 120,51.96152422706631 90,103.92304845413263 30,103.92304845413263"
+                 stroke="white"
+                 stroke-width="7.5"></polygon>
+        <text class="cell-letter" x="50%" y="50%" dy="0.35em">t</text>
+      </svg>
+      <svg class="hive-cell outer" viewBox="0 0 120 103.92304845413263">
+        <polygon class="cell-fill" points="0,51.96152422706631 30,0 90,0 120,51.96152422706631 90,103.92304845413263 30,103.92304845413263"
+                 stroke="white"
+                 stroke-width="7.5"></polygon>
+        <text class="cell-letter" x="50%" y="50%" dy="0.35em">v</text>
+      </svg>
+      <svg class="hive-cell outer" viewBox="0 0 120 103.92304845413263">
+        <polygon class="cell-fill" points="0,51.96152422706631 30,0 90,0 120,51.96152422706631 90,103.92304845413263 30,103.92304845413263"
+                 stroke="white"
+                 stroke-width="7.5"></polygon>
+        <text class="cell-letter" x="50%" y="50%" dy="0.35em">z</text>
+      </svg>
+      <svg class="hive-cell outer" viewBox="0 0 120 103.92304845413263">
+        <polygon class="cell-fill" points="0,51.96152422706631 30,0 90,0 120,51.96152422706631 90,103.92304845413263 30,103.92304845413263"
+                 stroke="white"
+                 stroke-width="7.5"></polygon>
+        <text class="cell-letter" x="50%" y="50%" dy="0.35em">n</text>
+      </svg>
+      <svg class="hive-cell outer" viewBox="0 0 120 103.92304845413263">
+        <polygon class="cell-fill" points="0,51.96152422706631 30,0 90,0 120,51.96152422706631 90,103.92304845413263 30,103.92304845413263"
+                 stroke="white"
+                 stroke-width="7.5"></polygon>
+        <text class="cell-letter" x="50%" y="50%" dy="0.35em">c</text>
+      </svg>
+      <svg class="hive-cell outer" viewBox="0 0 120 103.92304845413263">
+        <polygon class="cell-fill" points="0,51.96152422706631 30,0 90,0 120,51.96152422706631 90,103.92304845413263 30,103.92304845413263"
+                 stroke="white"
+                 stroke-width="7.5"></polygon>
+        <text class="cell-letter" x="50%" y="50%" dy="0.35em">i</text>
+      </svg>
+    </div>
+  </template>
+</div>
+<figcaption style="text-align: center;">
+  Spelling Bee for March 21, 2025
+</figcaption>

@@ -22,6 +22,9 @@ func ParseValues(expr string) (Values, error) {
 	s := strings.TrimSpace(expr)
 	offs := 0
 
+	if len(s) == 0 {
+		return Values{}, errors.New("empty extended attributes")
+	}
 	if s[0] != '{' {
 		return Values{}, fmt.Errorf("expected '{' for extended attributes in code block:\n%s", s)
 	}

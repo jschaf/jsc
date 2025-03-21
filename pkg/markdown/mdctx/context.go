@@ -86,7 +86,7 @@ func SetTitle(pc parser.Context, title Title) {
 
 var filePathCtxKey = parser.NewContextKey()
 
-// GetFilePath returns the file path of the main markdown file that initiated
+// GetFilePath returns the file path of the main Markdown file that initiated
 // this parse. Helpful for error messages.
 func GetFilePath(pc parser.Context) string {
 	p := pc.Get(filePathCtxKey)
@@ -96,7 +96,7 @@ func GetFilePath(pc parser.Context) string {
 	return p.(string)
 }
 
-// SetFilePath sets the file path of the main markdown path. Should only be
+// SetFilePath sets the file path of the main Markdown path. Should only be
 // called once per file.
 func SetFilePath(pc parser.Context, val string) {
 	pc.Set(filePathCtxKey, val)
@@ -105,7 +105,7 @@ func SetFilePath(pc parser.Context, val string) {
 var rendererCtxKey = parser.NewContextKey()
 
 // GetRenderer returns the main goldmark renderer or nil if none exists. Useful
-// for rendering markdown into HTML that doesn't fit into the
+// for rendering Markdown into HTML that doesn't fit into the
 // parse-transform-render model. For example, link preview data is rendered into
 // HTML stored in the data attributes of <a> tags, like:
 //
@@ -118,7 +118,7 @@ func GetRenderer(pc parser.Context) (renderer.Renderer, bool) {
 	return r.(renderer.Renderer), true
 }
 
-// SetRenderer sets the goldmark renderer used to render markdown. Should only
+// SetRenderer sets the goldmark renderer used to render Markdown. Should only
 // be called once per file.
 func SetRenderer(pc parser.Context, r renderer.Renderer) {
 	pc.Set(rendererCtxKey, r)

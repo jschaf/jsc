@@ -45,7 +45,8 @@ func WalkUp(dirToFind string) (string, error) {
 // WalkConcurrent walks dir, recursively calling walkFunc on each entry.
 func WalkConcurrent(dir string, maxParallel int, walkFunc godirwalk.WalkFunc) error {
 	sem := semaphore.NewWeighted(int64(maxParallel))
-	g, ctx := errgroup.WithContext(context.Background())
+	ctx := context.Background()
+	g := &errgroup.Group{}
 
 	callback := func(path string, dirent *godirwalk.Dirent) error {
 		if err := sem.Acquire(ctx, 1); err != nil {
@@ -139,7 +140,7 @@ func Copy(dest, src string) (mErr error) {
 // the same, otherwise false.
 func CopyLazy(dest, src string) (b bool, mErr error) {
 	if isSame, err := files.IsSameBytes(src, dest); errors.Is(err, os.ErrNotExist) {
-		// Ok for file not to exist.
+		// Ok for the file not to exist.
 	} else if err != nil {
 		return false, fmt.Errorf("check if same file before copy: %w", err)
 	} else if isSame {

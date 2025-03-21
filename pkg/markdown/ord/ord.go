@@ -58,4 +58,5 @@ const (
 	ColonBlockRenderer      RendererPriority = 1000
 	ColonLineRenderer       RendererPriority = 1000
 	TOCRenderer             RendererPriority = 1000
+	EmbedRenderer           RendererPriority = 1000
 )

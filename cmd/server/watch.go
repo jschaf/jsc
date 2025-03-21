@@ -59,7 +59,7 @@ func (f *FSWatcher) Start() (mErr error) {
 				// Intellij temp file
 				break
 			}
-			// Ignore everything except writes.
+			// Ignore everything except write calls.
 			if event.Op&fsnotify.Write != fsnotify.Write {
 				break
 			}
@@ -79,10 +79,11 @@ func (f *FSWatcher) Start() (mErr error) {
 				if err := static.CopyStaticFiles(f.distDir); err != nil {
 					return fmt.Errorf("failed to copy static files: %w", err)
 				}
-				// Send empty string which should reload all LiveReload clients
+				// Send the empty string which should reload all LiveReload
+				// clients.
 				f.liveReload.ReloadFile("")
 
-			case filepath.Ext(rel) == ".md":
+			case filepath.Ext(rel) == ".md" || filepath.Ext(rel) == ".html":
 				if err := f.compileReloadMd(); err != nil {
 					return fmt.Errorf("failed to compiled changed markdown: %w", err)
 				}
@@ -96,10 +97,11 @@ func (f *FSWatcher) Start() (mErr error) {
 				f.liveReload.ReloadFile("")
 
 			case strings.HasPrefix(rel, "pkg/markdown/"):
-				// Skip recompiling since we don't have server hot-reload enabled.
+				// Skip recompiling since we don't have the server hot-reload
+				// enabled.
 
 			case filepath.Ext(rel) == ".go" && !strings.HasSuffix(rel, "_test.go"):
-				// Rebuild the server to pickup any new changes.
+				// Rebuild the server to pick up any new changes.
 				if err := f.rebuildServer(); err != nil {
 					slog.Error("rebuild server", "error", err)
 				}

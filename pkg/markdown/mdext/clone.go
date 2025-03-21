@@ -118,7 +118,7 @@ func newNode(src ast.Node) ast.Node {
 	case *ColonLine:
 		cl := NewColonLine()
 		cl.Name = n.Name
-		cl.Args = n.Args
+		cl.RawAttrs = n.RawAttrs
 		return cl
 	case *ContinueReading:
 		return NewContinueReading(n.Link)

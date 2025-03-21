@@ -96,7 +96,7 @@ func GetFootnoteBodies(pc parser.Context) map[FootnoteName]*FootnoteBody {
 }
 
 // ColonBlock parses colon delimited structures inspired by
-// https://pandoc.org/MANUAL.html#extension-fenced_divs
+// https://pandoc.org/MANUAL.html#extension-fenced_divs.
 // For example:
 //
 //	::: preview http://example.com

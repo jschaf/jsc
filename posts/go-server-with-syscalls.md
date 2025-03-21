@@ -14,7 +14,7 @@ scratch without relying on libraries and without first
 I’ve also wanted a chance to take Go for a spin. I’ll cover how to create a web
 server in Go using Linux system calls.
 
-**Completed Code at Github**:
+**Completed Code at GitHub**:
 [scratch_server.go](https://gist.github.com/jschaf/93f37aedb5327c54cb356b2f1f0427e3)
 
 ## Non-goals

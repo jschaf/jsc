@@ -18,9 +18,9 @@ type Citation struct {
 	Key bibtex.CiteKey
 	// The bibtex entry this citation points to.
 	Bibtex bibtex.Entry
-	// The prefix in a citation reference, i.e the "foo" in `[^foo @qux]`.
+	// The prefix in a citation reference, i.e., the "foo" in `[^foo @qux]`.
 	Prefix string
-	// The suffix in a citation reference, i.e the "bar" in `[^@qux bar]`.
+	// The suffix in a citation reference, i.e., the "bar" in `[^@qux bar]`.
 	Suffix string
 }
 
