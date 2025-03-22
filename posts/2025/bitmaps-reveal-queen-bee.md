@@ -7,9 +7,9 @@ visibility = "published"
 # Bitmaps reveal the Queen Bee
 
 I fell into the Wordle craze a few years after everyone else. After indulging in
-several months of Wordle, I shifted my focus to the NYT [Spelling Bee]. What
-better way to enjoy the Queen Bee than to solve it programmatically? Any excuse
-to play with bitmaps is fine by me.
+Wordle for several months , I shifted my focus to the NYT [Spelling Bee]. What
+better way to enjoy the Spelling Bee than solving it programmatically? Any
+excuse to play with bitmaps is fine by me.
 
 :embed: {name='bitmaps-reveal-queen-bee.html'}
 
@@ -35,11 +35,11 @@ I started with the following sketch:
 
 To match the words, we'll use a bitmap representing the character set of a word.
 Since there are 26 letters, and we don't care about frequency, the data fits in
-a `uint32`. For example, to represent `citizen`:
+a 32-bit unsigned integer. For example, to represent `citizen`:
 
 ```
-0 0 1 0 1 0 0 0 1 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0
-a b c d e f g h i j k l m n o p q r s t u v w x y z _ _ _ _ _ _ 
+  1 1   1    1     1     1      
+abcdefghijklmnopqrstuvwxyz______
 ```
 
 When matching a word, we need to verify two conditions:
@@ -48,7 +48,7 @@ When matching a word, we need to verify two conditions:
 2. The word contains only the letters present in the `target` bitmap.
 
 The challenge lies in ensuring that a word uses only the target letters. In
-other words, does the `word` bitmap contain only the set bits corresponding to
+other words, does the `word` bitmap contain only the set bits that correspond to
 the `target` bitmap? We can encode the logic with two steps:
 
 1. Bitwise `and` the `word` bitmap with the `target` bitmap. The result is only
@@ -74,13 +74,13 @@ dictionary.
 package main
 
 type wordMatcher struct {
-	// center is a bitmap of the single center letter in the target word.
+	// bitmap of the center target letter
 	center uint32
-	// all is a bitmap of all letters in the target word
+	// bitmap of all target letters
 	all uint32
 }
 
-func newWorldMatcher(target string) wordMatcher {
+func newWordMatcher(target string) wordMatcher {
 	return wordMatcher{
 		center: letterBitmap(target[0]),
 		all:    wordBitmap([]byte(target)),
@@ -88,6 +88,7 @@ func newWorldMatcher(target string) wordMatcher {
 }
 
 func (m wordMatcher) isMatch(word []byte) bool {
+	// Skip proper nouns and hyphenated words.
 	for _, r := range word {
 		if r < 'a' || r > 'z' {
 			return false
@@ -95,8 +96,8 @@ func (m wordMatcher) isMatch(word []byte) bool {
 	}
 	other := wordBitmap(word)
 	hasCenter := other&m.center > 0
-	isExclusive := (other & m.all) == other
-	return hasCenter && isExclusive
+	isTargetLetters := (other & m.all) == other
+	return hasCenter && isTargetLetters
 }
 
 func wordBitmap(word []byte) uint32 {
@@ -107,30 +108,31 @@ func wordBitmap(word []byte) uint32 {
 	return bm
 }
 
-func letterBitmap(ch byte) uint32 { return 1 << (ch - 'a') }
+func letterBitmap(ch byte) uint32 {
+	return 1 << (ch - 'a')
+}
 ```
 
 ## Results
 
-The program works as advertised. For the target word `entivcz`, we find all
-matching words in the dictionary. However, there are two problems with the
-solver.
+The program works as advertised. For the target letters `entivcz`, we find all
+matching words in the dictionary. Using the word list assembled by Reddit user
+[ahecht], we find the panagram `incentivize` and other matches like `incentive`.
+The dictionary may be incomplete, so a fun next project would be extracting the
+word list from the app.
 
-1. The list includes obscure words like `itcze` and `cetene`.
-2. The list doesn't include suffixation, like adding `ed` or `ing` to the word.
-   This means the solver misses the panagram for the puzzle: `incentivize`.
+[ahecht]: https://old.reddit.com/r/NYTSpellingBee/comments/zzdo3q/rebuilding_spelling_bee_for_fun_what_dictionary/
 
-```go
-Letters: etnizvc
+```txt
+Letters: entivcz
 Panagrams:
+  incentivize
 Matches:
   incentive
-  inventive
+  ...
   nineteen
+  evictee
   ...
-  evict
-  niece
-  ...
-  nine
-  nice
+  vine
+  zine
 ```
