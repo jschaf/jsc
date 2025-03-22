@@ -119,6 +119,7 @@
   --box-shadow-elevation-24: 0 11px 15px -7px rgba(0, 0, 0, .2), 0 24px 38px 3px rgba(0, 0, 0, .14), 0 9px 46px 8px rgba(0, 0, 0, .12);
 
   --max-body-width: 800px;
+  --body-padding: 16px;
   --min-margin-width: 300px;
 
   --gutter-width: 25px;
@@ -202,7 +203,7 @@ body > main {
   }
 
   body {
-    margin: 0 16px;
+    margin: 0 var(--body-padding);
   }
 
   body > main {
@@ -214,6 +215,12 @@ body > main {
   article > .toc {
     float: none;
     max-width: max-content;
+  }
+
+  .code-block-container {
+    margin-left: calc(-1 * var(--body-padding));
+    margin-right: calc(-1 * var(--body-padding));
+    padding: 0 var(--body-padding);
   }
 }
 
@@ -618,7 +625,6 @@ thead th {
 .code-block-container {
   position: relative;
   margin-top: .75rem;
-  border: none; /* disable fieldset automatic border */
   border-top: 1px solid var(--stone-300);
   border-bottom: 1px solid var(--stone-300);
   background-color: var(--stone-50);
