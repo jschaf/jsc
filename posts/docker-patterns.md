@@ -1,19 +1,18 @@
 +++
 slug = "docker-patterns"
 date = 2020-05-03
-visibility = "draft"
+visibility = "published"
 +++
 
 # Implementation patterns in Docker
 
-After spending a considerable amount of time using Docker for CI pipelines, I've
-noticed a few patterns and developed some guidelines to make my life easier.
+After extensively using Docker for CI pipelines, I've identified several
+patterns and developed guidelines to simplify the process.
 
 ## Shell hygiene
 
-We'll start with shell hygiene. Firstly, prefix complex chains of `RUN` commands
-with `set -eux` to stop script execution on errors (`errexit`), stop on unset
-variables (`nounset`), and trace commands (`x`).
+Begin with shell hygiene: prefix complex `RUN` command chains with `set -eux`
+to halt on errors (errexit), unset variables (nounset), and trace commands (x).
 
 ```dockerfile
 RUN set -eux \
@@ -33,13 +32,13 @@ of my scripts.
 
 ## Move logic out of a Dockerfile into a script
 
-Dockerfile syntax is horrendous for building scripts past about 5 lines. Instead
-of wrestling with `&&` and backslashes, move logic into a script. Then, `COPY`
+Dockerfile syntax becomes unwieldy for scripts longer than five lines. Move
+logic into a script to avoid complex `&&` chains and backslashes. Then, `COPY`
 the script into the Docker image. Docker invalidates based on the hash of the
-copied script, so any changes in the copied script force Docker to rebuild that
-layer plus all following layers. The benefit of using external scripts are
-that you can use Bash instead of the container shell and all the programming
-tools with external files, especially shellcheck.
+copied script, so any changes force Docker to rebuild that layer plus all
+following layers. The benefit of using external scripts is that you can use
+Bash instead of the container shell, along with all the programming tools,
+especially shellcheck.
 
 ```dockerfile
 FROM debian:latest
@@ -50,11 +49,10 @@ RUN /usr/local/bin/download_vector.sh
 ## Always update apt cache
 
 Minor versions in Debian package repositories advance quickly into oblivion.
-Always prefix `apt-get install` with `apt-get update`. If the base image has a
-previously issued `apt-get update` command, its apt cache contains with
-available package versions that existed at the creation time of the image.
-Debian removes old versions from the package repositories, so `apt-get install`
-can fail if the cached version is too old.
+Always prefix `apt-get install` with `apt-get update`. If the base image's 
+`apt-get` update command was issued earlier, its cache holds package versions
+available at the image's creation. Debian removes old versions from the package
+repositories, so `apt-get install` can fail if the cached version is too old.
 
 ```shell
 apt-get update
@@ -78,9 +76,9 @@ supporting redirects and not failing on 400 or 500 status codes.
 
 To verify, run `curl -v httpbin.org/status/404; echo status: $?`. The exit code
 variable `$?` will be set to 0, indicating no error. From curl's perspective, a
-0 exit code makes sense. curl successfully received a response from a server
-that happened to have a status code other than 200. Use the `--fail` flag to
-direct curl to use the exit code 22 when the status code is not 200.
+0 exit code is logical because it successfully received a response, even if the
+status code isn't 200. Use the `--fail` flag to direct curl to use the exit
+code 22 when the status code is not 200.
 
 A robust curl command looks like:
 
@@ -95,7 +93,7 @@ curl --fail --location --output "${out_file}" "${url}"
 ## Extracting single items out of a `.tar.gz` file
 
 Building from source code requires downloading the source code first. A TAR
-bundle provides an efficient, versioned mechanism to download source code.
+bundle provides an efficient and versioned mechanism to download source code.
 
 Instead of extracting all files in a compressed tar archive, extract only the
 files you need.
@@ -117,7 +115,7 @@ tar xvf vector.tar.xz \
 ## Alias an image used in multiple build targets
 
 It's convenient to reference a single image by using an alias. This is useful
-when pinning to a specific version. Alternately, build arg variables provide a
+when pinning to a specific version. Alternatively, build arg variables provide a
 similar, but slightly longer method.
 
 ```dockerfile
@@ -134,9 +132,9 @@ RUN set -eux \
 
 ## Build a small production image
 
-One way to build a small Docker image is to use Docker build layers (TODO:
-name). The idea is to use a wasteful image to build and compile a small binary
-that can be isolated on a small image.
+One way to build a small Docker image is to use Docker build layers. The idea is
+to use a wasteful image to build and compile a small binary that can be isolated
+on a small image.
 
 ```dockerfile
 ARG DEBIAN_VERSION=sid-20190812-slim
@@ -191,8 +189,8 @@ USER root
 
 ## Docker anti-patterns
 
-Patterns that aren't worth pursuing. The big one is Docker image sizes. Usually,
-it's enough to use builder images to produce good-enough sized images. I don't
+Some patterns, like minimizing Docker image sizes, aren't worth pursuing.
+Builder images typically suffice for producing adequately sized images. I don't
 recommend trying to trim existing images beyond basic maneuvers. Here's a list
 of size optimizations I've pursued:
 

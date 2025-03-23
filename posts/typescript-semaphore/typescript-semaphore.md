@@ -1,7 +1,7 @@
 +++
 slug = "typescript-semaphore"
 date = 2020-10-15
-visibility = "draft"
+visibility = "published"
 bib_paths = ["/ref.bib"]
 +++
 
@@ -9,7 +9,7 @@ bib_paths = ["/ref.bib"]
 
 :toc:
 
-I recently needed a semaphore in our NodeJS backend service to run database
+I recently needed a semaphore in our Node.js backend service to run database
 queries concurrently up to a certain threshold. It was a fun diversion from the
 more regular work of copying JSON from one destination to another.
 
@@ -28,7 +28,7 @@ visibility and mutual exclusion, but we’ll only need to implement mutual
 exclusion. To see why we don’t need to implement memory visibility, let’s
 consider the definition of memory visibility: a system has memory visibility if
 when one thread modifies a shared variable, the change is visible to other
-threads. The NodeJS runtime guarantees memory visibility by virtue of running
+threads. The Node.js runtime guarantees memory visibility by virtue of running
 application code in a single thread and dispatching asynchronous calls to four
 worker threads distributed by libuv. That leaves mutual exclusion, which we’ll
 implement in the semaphore using promises. The flavor of mutual exclusion
@@ -50,7 +50,7 @@ more heavily than cheaper queries.
   capacity back to the semaphore.
   
 ::: footnote side:static-factories
-I prefer static factories over constructors because static factories can have 
+I prefer static factories to constructors because static factories can have 
 descriptive names.
 :::
   
@@ -116,16 +116,16 @@ There’s still a bug in the above code snippet. What happens if we create
 `Semaphore.newWeighted(100)` and there’s only 5 employees? The for-loop will
 process all employees immediately without waiting on `Semaphore.acquire` because
 there’s enough capacity to run through all employees concurrently. That means
-we’ll exit the for-loop while the create employee promises are still running.
-After exiting the loop, we’ll check errs.length before all promises are resolved
-meaning we might ignore errors.
+we’ll exit the for-loop while the createEmployee promises are still running.
+After exiting the loop, we’ll check `errs.length` before all promises are
+resolved meaning we might ignore errors.
 
 We need some way to wait for all createEmployee promises to resolve. We can do
-that indirectly by trying to acquire all of the capacity of a Semaphore. For our
+that indirectly by trying to acquire the entire capacity of a Semaphore. For our
 semaphore with 100 capacity, that would look like `sem.acquire(100)`. We cannot
 acquire all the capacity until all pending and currently running promises
 release capacity back to the semaphore. This is a really useful concept, so I
-added a new method, Semaphore.wait The advantage of a separate wait method is
+added a new method, `Semaphore.wait` The advantage of a separate wait method is
 that you don’t need to specify the weight. We can fix our example with:
 
 ```ts
@@ -341,7 +341,7 @@ In computer science, a semaphore is a variable or abstract data type used to
 control access to a common resource by multiple processes in a concurrent system
 such as a multitasking operating system. A semaphore is simply a variable. This
 variable is used to solve critical section problems and to achieve process
-synchronization in the multi processing environment. A trivial semaphore is a
+synchronization in the multiprocessing environment. A trivial semaphore is a
 plain variable that is changed (for example, incremented or decremented, or
 toggled) depending on programmer-defined conditions.
 
