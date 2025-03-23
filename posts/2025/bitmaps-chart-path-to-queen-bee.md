@@ -1,17 +1,17 @@
 +++
-slug = "bitmaps-reveal-queen-bee"
+slug = "bitmaps-chart-path-to-queen-bee"
 date = 2025-03-21
 visibility = "published"
 +++
 
-# Bitmaps reveal the Queen Bee
+# Bitmaps chart path to Queen Bee
 
 I fell into the Wordle craze a few years after everyone else. After indulging in
-Wordle for several months , I shifted my focus to the NYT [Spelling Bee]. What
+Wordle for several months, I shifted my focus to the NYT [Spelling Bee]. What
 better way to enjoy the Spelling Bee than solving it programmatically? Any
 excuse to play with bitmaps is fine by me.
 
-:embed: {name='bitmaps-reveal-queen-bee.html'}
+:embed: {name='bitmaps-chart-path-to-queen-bee.html'}
 
 [Spelling Bee]: https://www.nytimes.com/puzzles/spelling-bee
 
