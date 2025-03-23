@@ -119,6 +119,7 @@
   --box-shadow-elevation-24: 0 11px 15px -7px rgba(0, 0, 0, .2), 0 24px 38px 3px rgba(0, 0, 0, .14), 0 9px 46px 8px rgba(0, 0, 0, .12);
 
   --max-body-width: 800px;
+  --inner-container-width: 650px;
   --body-padding: 16px;
   --min-margin-width: 300px;
 
@@ -217,6 +218,7 @@ body > main {
     max-width: max-content;
   }
 
+  /** Expand the container to the entire body. Looks better on mobile. */
   .code-block-container {
     margin-left: calc(-1 * var(--body-padding));
     margin-right: calc(-1 * var(--body-padding));
@@ -226,7 +228,7 @@ body > main {
 
 @media screen and (min-width: 682px) {
   html {
-    background-color: var(--zinc-200);
+    background: radial-gradient(circle, var(--slate-300) 0%, var(--sky-100) 100%);
   }
 
   body > header,
@@ -242,7 +244,7 @@ body > main {
 
   .main-inner-container {
     margin: 0 auto;
-    width: 650px;
+    width: var(--inner-container-width);
   }
 
   .article-split {
@@ -251,6 +253,13 @@ body > main {
     max-width: 768px;
     left: 50%;
     transform: translateX(-50%);
+  }
+
+  /** Expand the container to the entire body. */
+  .code-block-container {
+    margin-left: calc(-0.5 * (var(--max-body-width) - var(--inner-container-width)));
+    margin-right: calc(-0.5 * (var(--max-body-width) - var(--inner-container-width)));
+    padding: 0 calc(0.5 * (var(--max-body-width) - var(--inner-container-width)));
   }
 }
 
