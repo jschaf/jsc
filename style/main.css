@@ -228,7 +228,7 @@ body > main {
 
 @media screen and (min-width: 682px) {
   html {
-    background: radial-gradient(circle, var(--slate-300) 0%, var(--sky-100) 100%);
+    background: radial-gradient(circle, var(--slate-300) 0%, var(--sky-50) 100%);
   }
 
   body > header,
