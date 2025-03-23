@@ -1,7 +1,7 @@
 +++
 slug = "art-of-profitability"
 date = 2020-11-19
-visibility = "draft"
+visibility = "published"
 bib_paths = ["/ref.bib"]
 +++
 

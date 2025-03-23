@@ -87,7 +87,6 @@ func InitServer(ctx context.Context, opts ServerOpts) (*Server, error) {
 	watcher := NewFSWatcher(opts.DistDir, lr)
 	root := git.RootDir()
 	if err := watcher.watchDirs(
-		filepath.Join(root, dirs.Book),
 		filepath.Join(root, dirs.Cmd),
 		filepath.Join(root, dirs.Pkg),
 		filepath.Join(root, dirs.Posts),

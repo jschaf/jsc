@@ -120,8 +120,6 @@ func (t *tomlParser) Close(node ast.Node, reader text.Reader, pc parser.Context)
 	switch {
 	case strings.Contains(mdctx.GetFilePath(pc), `/`+dirs.TIL+`/`):
 		meta.Path = "/til/" + meta.Slug + "/"
-	case strings.Contains(mdctx.GetFilePath(pc), `/`+dirs.Book+`/`):
-		meta.Path = "/book/" + meta.Slug + "/"
 	default:
 		meta.Path = "/" + meta.Slug + "/"
 	}
